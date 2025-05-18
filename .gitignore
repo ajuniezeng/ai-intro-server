@@ -134,3 +134,6 @@ dist
 
 # VS Code
 .vscode
+
+# Drizzle
+drizzle
