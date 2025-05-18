@@ -3,7 +3,7 @@ import { mysqlTable, text, timestamp, varchar } from 'drizzle-orm/mysql-core';
 export const userTable = mysqlTable('user', {
   id: varchar('id', { length: 255 }).primaryKey(),
   username: varchar('username', { length: 255 }).notNull().unique(),
-  passwordHash: text('password_hash').notNull(),
+  password_hash: text('password_hash').notNull(),
 });
 
 export const sessionTable = mysqlTable('session', {

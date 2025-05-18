@@ -3,11 +3,11 @@ import { drizzle } from 'drizzle-orm/mysql2';
 import { z } from 'zod';
 import { sessionTable, userTable } from './db/schemas/auth';
 
-const EnvSchema = z.object({
+const envSchema = z.object({
   DATABASE_URL: z.string().url(),
 });
 
-const processEnv = EnvSchema.parse(process.env);
+const processEnv = envSchema.parse(process.env);
 
 export const db = drizzle(processEnv.DATABASE_URL);
 
