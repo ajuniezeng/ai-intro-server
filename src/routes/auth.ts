@@ -9,18 +9,27 @@ import { lucia } from '../lucia';
 import { HTTPException } from 'hono/http-exception';
 import { eq } from 'drizzle-orm';
 import { loggedIn } from '../middleware/loggedIn';
+import { userProfileTable } from '../db/schemas/profile';
 
 export const authRouter = new Hono<Context>()
   .post('/signup', zValidator('form', loginSchema), async (c) => {
     const { username, password } = c.req.valid('form');
     const passwordHash = await Bun.password.hash(password);
     const userId = generateId(15);
+    const profileId = generateId(15);
 
     try {
-      await db.insert(userTable).values({
-        id: userId,
-        username,
-        password_hash: passwordHash,
+      await db.transaction(async (tx) => {
+        await tx.insert(userTable).values({
+          id: userId,
+          username,
+          passwordHash,
+        });
+
+        await tx.insert(userProfileTable).values({
+          id: profileId,
+          userId,
+        });
       });
 
       const session = await lucia.createSession(userId, { username });
@@ -58,7 +67,7 @@ export const authRouter = new Hono<Context>()
 
     const validPassword = await Bun.password.verify(
       password,
-      existingUser.password_hash,
+      existingUser.passwordHash,
     );
 
     if (!validPassword) {

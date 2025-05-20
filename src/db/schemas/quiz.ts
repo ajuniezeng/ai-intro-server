@@ -48,32 +48,11 @@ export const quizAnswerTable = mysqlTable('quiz_answer', {
   id: varchar('id', { length: 255 }).primaryKey(),
   quizAttemptId: varchar('quiz_attempt_id', { length: 255 })
     .notNull()
-    .references(() => quizAttemptTable.id), // Links to quiz attempt
+    .references(() => quizAttemptTable.id),
   questionId: varchar('question_id', { length: 255 })
     .notNull()
-    .references(() => questionTable.id), // Links to question
-  userAnswer: text('user_answer').notNull(), // User's selected answer
-  isCorrect: boolean('is_correct').notNull(), // Whether the answer was correct
+    .references(() => questionTable.id), 
+  userAnswer: text('user_answer').notNull(),
+  isCorrect: boolean('is_correct').notNull(),
   answeredAt: timestamp('answered_at', { mode: 'date' }).notNull().defaultNow(),
-});
-
-// === LLM Chat History Tables ===
-// Chat Session Table: Stores individual chat sessions between user and LLM
-export const chatSessionTable = mysqlTable('chat_session', {
-  id: varchar('id', { length: 255 }).primaryKey(),
-  userId: varchar('user_id', { length: 255 })
-    .notNull()
-    .references(() => userTable.id), // Links to user
-  startedAt: timestamp('started_at', { mode: 'date' }).notNull().defaultNow(),
-});
-
-// Chat Message Table: Stores individual messages in a chat session
-export const chatMessageTable = mysqlTable('chat_message', {
-  id: varchar('id', { length: 255 }).primaryKey(),
-  chatSessionId: varchar('chat_session_id', { length: 255 })
-    .notNull()
-    .references(() => chatSessionTable.id), // Links to chat session
-  sender: varchar('sender', { length: 50 }).notNull(), // 'user' or 'llm'
-  content: text('content').notNull(), // The message content
-  sentAt: timestamp('sent_at', { mode: 'date' }).notNull().defaultNow(),
 });

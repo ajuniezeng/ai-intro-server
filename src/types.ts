@@ -24,3 +24,30 @@ export const updatePasswordSchema = z.object({
   oldPassword: z.string().min(6).max(255),
   newPassword: z.string().min(6).max(255),
 });
+
+export const chatMessageSchema = z.object({
+  role: z.string(),
+  content: z.string(),
+});
+
+export type ChatMessage = z.infer<typeof chatMessageSchema>;
+
+export interface OpenAiChatCompletions {
+  id: string;
+  object: string;
+  created: number;
+  model: string;
+  choices: {
+    index: number;
+    message: {
+      role: string;
+      content: string;
+    };
+    finish_reason: string;
+  }[];
+  usage: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
+}
