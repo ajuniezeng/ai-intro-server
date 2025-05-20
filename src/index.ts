@@ -8,6 +8,7 @@ import { prettyJSON } from 'hono/pretty-json';
 import type { ErrorResponse } from './types';
 import { HTTPException } from 'hono/http-exception';
 import { authRouter } from './routes/auth';
+import { quizRouter } from './routes/quiz'; // Import quizRouter
 
 const envSchema = z.object({
   PORT: z.number({ coerce: true }),
@@ -46,6 +47,7 @@ app.use(logger());
 app.use(prettyJSON());
 
 app.basePath('/api').route('/auth', authRouter);
+app.basePath('/api').route('/quiz', quizRouter); // Register quizRouter
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) {

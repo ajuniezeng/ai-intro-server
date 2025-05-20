@@ -32,6 +32,7 @@ export const chatRouter = new Hono<Context>()
     zValidator('form', chatMessageSchema),
     loggedIn,
     async (c) => {
+      const serverReceivedTimestamp = new Date(); // Capture server-side timestamp
       const message = c.req.valid('form');
       const user = c.get('user')!;
 
@@ -48,7 +49,7 @@ export const chatRouter = new Hono<Context>()
           chatSessionId: res.id,
           role: message.role,
           content: message.content,
-          createdAt: new Date(res.created * 1000),
+          createdAt: serverReceivedTimestamp, // Use server-side timestamp
         };
 
         const completions = res.choices.map((item) => item.message).join();
@@ -77,9 +78,14 @@ export const chatRouter = new Hono<Context>()
           },
           200,
         );
-      } catch (err) {
+      } catch (err: any) {
+        console.error('Error in POST /completions:');
+        console.error(err.message);
+        if (err.stack) {
+          console.error(err.stack);
+        }
         throw new HTTPException(500, {
-          message: 'Internal Error ' + err,
+          message: 'An unexpected error occurred while processing your request.',
         });
       }
     },
@@ -87,24 +93,31 @@ export const chatRouter = new Hono<Context>()
   .get('/history', loggedIn, async (c) => {
     const user = c.get('user')!;
 
-    const sessionIdList = await db
-      .select()
+    const sessionIds = await db
+      .select({ id: chatSessionTable.id })
       .from(chatSessionTable)
       .where(eq(chatSessionTable.userId, user.id));
 
-    const history = await Promise.all(
-      sessionIdList.map(async (id) => {
-        return await db
-          .select()
-          .from(chatMessageTable)
-          .where(eq(chatMessageTable.chatSessionId, id.id));
-      }),
-    );
+    if (sessionIds.length === 0) {
+      return c.json<SuccessResponse<ChatHistory[]>>({
+        success: true,
+        message: 'Successfully fetch chat history',
+        data: [],
+      });
+    }
+
+    const uniqueSessionIds = sessionIds.map((session) => session.id);
+
+    const messages = await db
+      .select()
+      .from(chatMessageTable)
+      .where(inArray(chatMessageTable.chatSessionId, uniqueSessionIds))
+      .orderBy(chatMessageTable.createdAt); // Sort messages by createdAt
 
     return c.json<SuccessResponse<ChatHistory[]>>({
       success: true,
       message: 'Successfully fetch chat history',
-      data: history.flat().map((item) => {
+      data: messages.map((item) => {
         return {
           id: item.chatSessionId,
           role: item.role,
