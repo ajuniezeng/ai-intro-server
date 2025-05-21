@@ -1,5 +1,10 @@
 {
   "name": "ai-intro-server",
+  "author": {
+    "name": "Ajunie Zeng",
+    "email": "me@ajunie.com"
+  },
+  "version": "0.1.0",
   "scripts": {
     "dev": "bun run --hot src/index.ts"
   },

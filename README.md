@@ -141,18 +141,3 @@ All quiz routes require user authentication.
 * **Response**:
   * Success (200): `{ "success": true, "message": "Successfully fetched quiz attempt details", "data": { "id": "attemptId", ..., "answers": [{ "questionId": "qId", "questionContent": "Question text?", "userAnswer": "user's answer", "isCorrect": true, "correctAnswer": "actualCorrectAnswer" }, ...] } }`
   * Error (404): If `attemptId` is not found or does not belong to the user.
-
----
-
-# Testing
-
-The project uses `bun:test` for unit and integration tests. Test files are located alongside the source files (e.g., `src/routes/chat.test.ts`).
-
-To run all tests:
-
-```sh
-bun test
-```
-
-Make sure your development server is running and the database is accessible if tests involve database interactions. Test setup typically includes seeding data and cleaning up afterwards to ensure test isolation.
-Refer to `src/routes/chat.test.ts` and `src/routes/quiz.test.ts` for examples.

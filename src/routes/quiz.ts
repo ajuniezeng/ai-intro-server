@@ -11,7 +11,7 @@ import {
   type QuestionSet,
   type QuestionSetDetail,
   type QuizAttempt,
-} from '../db/schemas/quiz'; // Assuming quiz schemas are in their own file or update path
+} from '../db/schemas/quiz';
 import { randomUUIDv7 } from 'bun';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
@@ -139,7 +139,7 @@ export const quizRouter = new Hono<Context>()
         isCorrect: isCorrect,
         answeredAt: new Date(),
       };
-      
+
       await db.transaction(async (tx) => {
         await tx.insert(quizAnswerTable).values(newAnswer);
 
