@@ -192,4 +192,3 @@ All quiz routes require user authentication.
 * **Response**:
   * Success (200): `{ "success": true, "message": "Successfully fetched quiz attempt details", "data": { "id": "attemptId", ..., "answers": [{ "questionId": "qId", "questionContent": "Question text?", "userAnswer": "user's answer", "isCorrect": true, "correctAnswer": "actualCorrectAnswer" }, ...] } }`
   * Error (404): If `attemptId` is not found or does not belong to the user.
-*
