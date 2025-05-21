@@ -122,7 +122,6 @@ export const quizRouter = new Hono<Context>()
         });
       }
 
-      // 3. Determine if userAnswer is correct
       let isCorrect = false;
       if (
         question.type === 'single_selection' ||
@@ -130,7 +129,6 @@ export const quizRouter = new Hono<Context>()
       ) {
         isCorrect = userAnswer === question.correctAnswer;
       }
-      // Add other types like 'multiple_selection' if needed in future
 
       const answerId = randomUUIDv7();
       const newAnswer = {
@@ -141,14 +139,17 @@ export const quizRouter = new Hono<Context>()
         isCorrect: isCorrect,
         answeredAt: new Date(),
       };
-      await db.insert(quizAnswerTable).values(newAnswer);
+      
+      await db.transaction(async (tx) => {
+        await tx.insert(quizAnswerTable).values(newAnswer);
 
-      if (isCorrect) {
-        await db
-          .update(quizAttemptTable)
-          .set({ score: (quizAttempt.score || 0) + 1 })
-          .where(eq(quizAttemptTable.id, attemptId));
-      }
+        if (isCorrect) {
+          await tx
+            .update(quizAttemptTable)
+            .set({ score: (quizAttempt.score || 0) + 1 })
+            .where(eq(quizAttemptTable.id, attemptId));
+        }
+      });
 
       return c.json({
         success: true,
