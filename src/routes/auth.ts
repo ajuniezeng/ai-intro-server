@@ -60,7 +60,7 @@ export const authRouter = new Hono<Context>()
 
     if (!existingUser) {
       throw new HTTPException(401, {
-        message: 'Incorrect username',
+        message: 'Invalid username or password',
         cause: { form: true },
       });
     }
@@ -72,7 +72,7 @@ export const authRouter = new Hono<Context>()
 
     if (!validPassword) {
       throw new HTTPException(401, {
-        message: 'Incorrect password',
+        message: 'Invalid username or password',
         cause: { form: true },
       });
     }
@@ -115,7 +115,7 @@ export const authRouter = new Hono<Context>()
       .limit(1);
 
     if (!profile) {
-      throw new HTTPException(404, { message: 'User not existed' });
+      throw new HTTPException(404, { message: 'User not found' });
     }
     return c.json({
       success: true,

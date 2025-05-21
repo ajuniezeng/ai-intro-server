@@ -1,4 +1,4 @@
-# How to Develop
+*# How to Develop
 
 First install `bun` and `docker`.
 
@@ -30,6 +30,56 @@ App runs on the port you specified in the environment variables.
 
 The application provides APIs for chat functionalities and a quiz system. All API routes are prefixed with `/api`.
 Authentication is required for most endpoints and is handled via session cookies.
+
+## Authentication API
+
+Base Path: `/api/auth`
+
+### `POST /login`
+
+* **Description**: Authenticates a user and creates a session. The session cookie is set in the response.
+* **Request Body**: `application/form`
+
+    ```json
+    {
+      "username": "username",
+      "password": "user's password"
+    }
+    ```
+
+* **Response**:
+* Success (200): `{ "success": true, "message": "Logged in"}`
+* Error (401): `{ "success": false, "error": "Invalid username or password", "cause": { "form": true }}`
+
+### `POST /signup`
+
+* **Description**: Registers a new user and creates a session. The session cookie is set in the response.
+* **Request Body**: `application/form`
+
+    ```json
+    {
+      "username": "username",
+      "password": "user's password",
+    }
+    ```
+
+* **Response**:
+* Success (200): `{ "success": true, "message": "User created" }`
+* Error (500): `{ "success": false, "error": "Failed to create user"}`
+
+### `GET /logout`
+
+* **Description**: Logs out the user by destroying the session. The session cookie is cleared in the response.
+* **Response**:
+* Redirect (302): Redirects to the home page after logging out.
+
+### `GET /user`
+
+* **Description**: Fetches the logged-in user's information.
+* **Response**:
+* Success (200): `{ "success": true, "message": "User fetched", "data": { "id": "userId", "username": "username", "profile": { "createdAt": "", "updatedAt": "", "totalQuizzesTaken": 1, "highestScore": 1 } } }`
+* Error (401): `{ "success": false, "error": "Unauthorized" }` (if the user is not logged in)
+* Error (404): `{ "success": false, "error": "User not found" }` (if the user does not exist)
 
 ## Chat API
 
@@ -142,3 +192,4 @@ All quiz routes require user authentication.
 * **Response**:
   * Success (200): `{ "success": true, "message": "Successfully fetched quiz attempt details", "data": { "id": "attemptId", ..., "answers": [{ "questionId": "qId", "questionContent": "Question text?", "userAnswer": "user's answer", "isCorrect": true, "correctAnswer": "actualCorrectAnswer" }, ...] } }`
   * Error (404): If `attemptId` is not found or does not belong to the user.
+*
