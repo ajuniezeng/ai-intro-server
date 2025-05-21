@@ -40,11 +40,11 @@ All chat routes require user authentication.
 ### `POST /completions`
 
 * **Description**: Submits a user's message to the LLM and receives a completion. It stores the user's message and the LLM's response in the database, creating a new chat session if necessary.
-* **Request Body**: `application/json`
+* **Request Body**: `application/form`
 
     ```json
     {
-      "role": "user", // Or other roles as defined
+      "role": "user",
       "content": "Your message to the LLM"
     }
     ```
@@ -86,7 +86,7 @@ All quiz routes require user authentication.
 * **Description**: Submits an answer for a specific question in an ongoing quiz attempt.
 * **Path Parameters**:
   * `attemptId` (string): The ID of the current quiz attempt.
-* **Request Body**: `application/json`
+* **Request Body**: `application/form`
 
     ```json
     {
@@ -132,6 +132,7 @@ All quiz routes require user authentication.
 * **Description**: Fetches all quiz attempts made by the logged-in user.
 * **Response**:
   * Success (200): `{ "success": true, "message": "Successfully fetched your quiz attempts", "data": [{ "attemptId": "attemptId", "questionSetId": "setId", "questionSetName": "Set Name", "score": 3, "totalQuestions": 5, "startedAt": "timestamp", "completedAt": "timestamp | null" }, ...] }`
+  * Error (404): If attempts are empty.
 
 #### `GET /attempts/:attemptId`
 
