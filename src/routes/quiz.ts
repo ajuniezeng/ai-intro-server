@@ -39,9 +39,9 @@ export const quizRouter = new Hono<Context>()
       .from(questionTable)
       .where(eq(questionTable.questionSetId, questionSetId));
 
-    const totalQuestions = 10;
+    const totalQuestions = questions.length > 10 ? 10 : questions.length;
 
-    if (questions.length === 0) {
+    if (totalQuestions === 0) {
       throw new HTTPException(404, {
         message: 'No questions found for this question set',
       });
@@ -73,7 +73,7 @@ export const quizRouter = new Hono<Context>()
     '/attempt/:attemptId/answer',
     loggedIn,
     zValidator(
-      'json',
+      'form',
       z.object({
         questionId: z.string(),
         userAnswer: z.string(), // Can be 'true', 'false', or option_id
@@ -81,7 +81,7 @@ export const quizRouter = new Hono<Context>()
     ),
     async (c) => {
       const attemptId = c.req.param('attemptId');
-      const { questionId, userAnswer } = c.req.valid('json');
+      const { questionId, userAnswer } = c.req.valid('form');
       const user = c.get('user')!;
 
       const [quizAttempt] = await db
@@ -310,6 +310,10 @@ export const quizRouter = new Hono<Context>()
       .where(eq(quizAttemptTable.userId, user.id))
       .orderBy(quizAttemptTable.startedAt);
 
+    if (myAttempts.length === 0) {
+      throw new HTTPException(404, { message: 'No attempts found' });
+    }
+
     return c.json({
       success: true,
       message: 'Successfully fetched your quiz attempts',
@@ -321,7 +325,7 @@ export const quizRouter = new Hono<Context>()
     const user = c.get('user')!;
 
     // Fetch the attempt and verify ownership
-    const quizAttempt = await db
+    const [quizAttempt] = await db
       .select({
         id: quizAttemptTable.id,
         userId: quizAttemptTable.userId,
