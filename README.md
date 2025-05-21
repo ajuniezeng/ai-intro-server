@@ -39,28 +39,30 @@ All chat routes require user authentication.
 
 ### `POST /completions`
 
-*   **Description**: Submits a user's message to the LLM and receives a completion. It stores the user's message and the LLM's response in the database, creating a new chat session if necessary.
-*   **Request Body**: `application/json`
+* **Description**: Submits a user's message to the LLM and receives a completion. It stores the user's message and the LLM's response in the database, creating a new chat session if necessary.
+* **Request Body**: `application/json`
+
     ```json
     {
       "role": "user", // Or other roles as defined
       "content": "Your message to the LLM"
     }
     ```
-*   **Response**:
-    *   Success (200): `{ "success": true, "message": "Successfully generate chat completions", "data": { "role": "assistant", "content": "LLM's response" } }`
-    *   Error (500): `{ "success": false, "error": "An unexpected error occurred while processing your request." }` (Error details are logged server-side)
-*   **Notes**:
-    *   The user's message timestamp (`createdAt`) is recorded when the server receives the request.
-    *   The LLM's response timestamp and session creation timestamp are based on the LLM API response.
+
+* **Response**:
+  * Success (200): `{ "success": true, "message": "Successfully generate chat completions", "data": { "role": "assistant", "content": "LLM's response" } }`
+  * Error (500): `{ "success": false, "error": "An unexpected error occurred while processing your request." }` (Error details are logged server-side)
+* **Notes**:
+  * The user's message timestamp (`createdAt`) is recorded when the server receives the request.
+  * The LLM's response timestamp and session creation timestamp are based on the LLM API response.
 
 ### `GET /history`
 
-*   **Description**: Fetches the chat history for the logged-in user. Messages from all chat sessions are returned in a flat list, sorted by when they were created.
-*   **Response**:
-    *   Success (200): `{ "success": true, "message": "Successfully fetch chat history", "data": [{ "id": "chatSessionId", "role": "user | assistant", "content": "message content", "createdAt": "timestamp" }, ...] }`
-    *   Empty (200): If no history, `data` will be an empty array.
-*   **Notes**: This endpoint has been optimized to avoid N+1 database queries.
+* **Description**: Fetches the chat history for the logged-in user. Messages from all chat sessions are returned in a flat list, sorted by when they were created.
+* **Response**:
+  * Success (200): `{ "success": true, "message": "Successfully fetch chat history", "data": [{ "id": "chatSessionId", "role": "user | assistant", "content": "message content", "createdAt": "timestamp" }, ...] }`
+  * Empty (200): If no history, `data` will be an empty array.
+* **Notes**: This endpoint has been optimized to avoid N+1 database queries.
 
 ## Quiz API
 
@@ -72,71 +74,73 @@ All quiz routes require user authentication.
 
 #### `POST /:questionSetId/start`
 
-*   **Description**: Starts a new quiz attempt for the specified question set.
-*   **Path Parameters**:
-    *   `questionSetId` (string): The ID of the question set to start.
-*   **Response**:
-    *   Success (200): `{ "success": true, "message": "Quiz started successfully", "data": { "attemptId": "newAttemptId", "totalQuestions": 5 } }`
-    *   Error (404): If `questionSetId` is not found or has no questions.
+* **Description**: Starts a new quiz attempt for the specified question set.
+* **Path Parameters**:
+  * `questionSetId` (string): The ID of the question set to start.
+* **Response**:
+  * Success (200): `{ "success": true, "message": "Quiz started successfully", "data": { "attemptId": "newAttemptId", "totalQuestions": 5 } }`
+  * Error (404): If `questionSetId` is not found or has no questions.
 
 #### `POST /attempt/:attemptId/answer`
 
-*   **Description**: Submits an answer for a specific question in an ongoing quiz attempt.
-*   **Path Parameters**:
-    *   `attemptId` (string): The ID of the current quiz attempt.
-*   **Request Body**: `application/json`
+* **Description**: Submits an answer for a specific question in an ongoing quiz attempt.
+* **Path Parameters**:
+  * `attemptId` (string): The ID of the current quiz attempt.
+* **Request Body**: `application/json`
+
     ```json
     {
       "questionId": "questionId",
       "userAnswer": "user's answer" // e.g., "true", "option_c", "text answer"
     }
     ```
-*   **Response**:
-    *   Success (200): `{ "success": true, "message": "Answer submitted successfully", "data": { "wasCorrect": true | false, "correctAnswer": "actualCorrectAnswer" } }`
-    *   Error (403): If the attempt is already completed or the question does not belong to the quiz set.
-    *   Error (404): If `attemptId` or `questionId` is not found.
+
+* **Response**:
+  * Success (200): `{ "success": true, "message": "Answer submitted successfully", "data": { "wasCorrect": true | false, "correctAnswer": "actualCorrectAnswer" } }`
+  * Error (403): If the attempt is already completed or the question does not belong to the quiz set.
+  * Error (404): If `attemptId` or `questionId` is not found.
 
 #### `POST /attempt/:attemptId/complete`
 
-*   **Description**: Marks a quiz attempt as completed. Updates the user's profile with the score and increments quizzes taken.
-*   **Path Parameters**:
-    *   `attemptId` (string): The ID of the quiz attempt to complete.
-*   **Response**:
-    *   Success (200): `{ "success": true, "message": "Quiz completed successfully", "data": { "attemptId": "attemptId", "score": 3, "totalQuestions": 5, "startedAt": "timestamp", "completedAt": "timestamp" } }`
-    *   Error (403): If the attempt is already completed.
-    *   Error (404): If `attemptId` is not found.
+* **Description**: Marks a quiz attempt as completed. Updates the user's profile with the score and increments quizzes taken.
+* **Path Parameters**:
+  * `attemptId` (string): The ID of the quiz attempt to complete.
+* **Response**:
+  * Success (200): `{ "success": true, "message": "Quiz completed successfully", "data": { "attemptId": "attemptId", "score": 3, "totalQuestions": 5, "startedAt": "timestamp", "completedAt": "timestamp" } }`
+  * Error (403): If the attempt is already completed.
+  * Error (404): If `attemptId` is not found.
 
 ### Fetching Quiz Information
 
 #### `GET /sets`
 
-*   **Description**: Fetches a list of all available question sets.
-*   **Response**:
-    *   Success (200): `{ "success": true, "message": "Successfully fetched question sets", "data": [{ "id": "setId", "name": "Set Name", "description": "Set Description", "createdAt": "timestamp" }, ...] }`
+* **Description**: Fetches a list of all available question sets.
+* **Response**:
+  * Success (200): `{ "success": true, "message": "Successfully fetched question sets", "data": [{ "id": "setId", "name": "Set Name", "description": "Set Description", "createdAt": "timestamp" }, ...] }`
 
 #### `GET /sets/:questionSetId`
 
-*   **Description**: Fetches details for a specific question set, including its questions. **Correct answers are NOT included** in this response.
-*   **Path Parameters**:
-    *   `questionSetId` (string): The ID of the question set.
-*   **Response**:
-    *   Success (200): `{ "success": true, "message": "Successfully fetched question set details", "data": { "id": "setId", "name": "Set Name", ..., "questions": [{ "id": "qId", "content": "Question text?", "type": "true_false", "options": null }, ...] } }`
-    *   Error (404): If `questionSetId` is not found.
+* **Description**: Fetches details for a specific question set, including its questions. **Correct answers are NOT included** in this response.
+* **Path Parameters**:
+  * `questionSetId` (string): The ID of the question set.
+* **Response**:
+  * Success (200): `{ "success": true, "message": "Successfully fetched question set details", "data": { "id": "setId", "name": "Set Name", ..., "questions": [{ "id": "qId", "content": "Question text?", "type": "true_false", "options": null }, ...] } }`
+  * Error (404): If `questionSetId` is not found.
 
 #### `GET /attempts/my`
 
-*   **Description**: Fetches all quiz attempts made by the logged-in user.
-*   **Response**:
-    *   Success (200): `{ "success": true, "message": "Successfully fetched your quiz attempts", "data": [{ "attemptId": "attemptId", "questionSetId": "setId", "questionSetName": "Set Name", "score": 3, "totalQuestions": 5, "startedAt": "timestamp", "completedAt": "timestamp | null" }, ...] }`
+* **Description**: Fetches all quiz attempts made by the logged-in user.
+* **Response**:
+  * Success (200): `{ "success": true, "message": "Successfully fetched your quiz attempts", "data": [{ "attemptId": "attemptId", "questionSetId": "setId", "questionSetName": "Set Name", "score": 3, "totalQuestions": 5, "startedAt": "timestamp", "completedAt": "timestamp | null" }, ...] }`
 
 #### `GET /attempts/:attemptId`
 
-*   **Description**: Fetches details for a specific quiz attempt made by the logged-in user. This response **includes the user's answers and the correct answers** for review.
-*   **Path Parameters**:
-    *   `attemptId` (string): The ID of the quiz attempt.
-*   **Response**:
-    *   Success (200): `{ "success": true, "message": "Successfully fetched quiz attempt details", "data": { "id": "attemptId", ..., "answers": [{ "questionId": "qId", "questionContent": "Question text?", "userAnswer": "user's answer", "isCorrect": true, "correctAnswer": "actualCorrectAnswer" }, ...] } }`
-    *   Error (404): If `attemptId` is not found or does not belong to the user.
+* **Description**: Fetches details for a specific quiz attempt made by the logged-in user. This response **includes the user's answers and the correct answers** for review.
+* **Path Parameters**:
+  * `attemptId` (string): The ID of the quiz attempt.
+* **Response**:
+  * Success (200): `{ "success": true, "message": "Successfully fetched quiz attempt details", "data": { "id": "attemptId", ..., "answers": [{ "questionId": "qId", "questionContent": "Question text?", "userAnswer": "user's answer", "isCorrect": true, "correctAnswer": "actualCorrectAnswer" }, ...] } }`
+  * Error (404): If `attemptId` is not found or does not belong to the user.
 
 ---
 

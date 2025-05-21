@@ -17,7 +17,7 @@ import {
 } from '../db/schemas/chat';
 import { randomUUIDv7 } from 'bun';
 import { HTTPException } from 'hono/http-exception';
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 
 type ChatHistory = {
   id: string;
@@ -78,12 +78,10 @@ export const chatRouter = new Hono<Context>()
           },
           200,
         );
-      } catch (err: any) {
+      } catch (err) {
         console.error('Error in POST /completions:');
-        console.error(err.message);
-        if (err.stack) {
-          console.error(err.stack);
-        }
+        console.error(err);
+        
         throw new HTTPException(500, {
           message: 'An unexpected error occurred while processing your request.',
         });

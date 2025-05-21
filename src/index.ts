@@ -9,6 +9,7 @@ import type { ErrorResponse } from './types';
 import { HTTPException } from 'hono/http-exception';
 import { authRouter } from './routes/auth';
 import { quizRouter } from './routes/quiz'; // Import quizRouter
+import { chatRouter } from './routes/chat';
 
 const envSchema = z.object({
   PORT: z.number({ coerce: true }),
@@ -46,8 +47,11 @@ app.use('*', cors(), async (c, next) => {
 app.use(logger());
 app.use(prettyJSON());
 
-app.basePath('/api').route('/auth', authRouter);
-app.basePath('/api').route('/quiz', quizRouter); // Register quizRouter
+app
+  .basePath('/api')
+  .route('/auth', authRouter)
+  .route('/quiz', quizRouter)
+  .route('/chat', chatRouter); 
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
