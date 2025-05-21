@@ -2,8 +2,8 @@ import { z } from 'zod';
 import type { ChatMessage, OpenAiChatCompletions } from '../types';
 
 const envSchema = z.object({
-  baseUrl: z.string().url(),
-  model: z.string(),
+  BASE_URL: z.string().url(),
+  MODEL: z.string(),
   API_KEY: z.string(),
 });
 
@@ -17,15 +17,17 @@ export async function requestOpenAiChatCompletionsApi(messages: ChatMessage[]) {
     },
     method: 'POST',
     body: JSON.stringify({
-      model: env.model,
+      model: env.MODEL,
       messages,
     }),
   };
 
-  const response = await fetch(env.baseUrl, fetchOptions);
+  const response = await fetch(env.BASE_URL, fetchOptions);
   if (!response.ok) {
     throw new Error(`API request failed with status ${response.status}`);
   }
 
-  return (await response.json()) as OpenAiChatCompletions;
+  const result = await response.json();
+
+  return result as OpenAiChatCompletions;
 }

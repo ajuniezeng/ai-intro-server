@@ -41,7 +41,7 @@ export interface OpenAiChatCompletions {
     index: number;
     message: {
       role: string;
-      content: string;
+      content: string | object;
     };
     finish_reason: string;
   }[];

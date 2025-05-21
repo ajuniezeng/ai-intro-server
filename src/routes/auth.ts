@@ -102,9 +102,24 @@ export const authRouter = new Hono<Context>()
   })
   .get('/user', loggedIn, async (c) => {
     const user = c.get('user')!;
-    return c.json<SuccessResponse<{ username: string }>>({
+
+    const [profile] = await db
+      .select({
+        createdAt: userProfileTable.createdAt,
+        updatedAt: userProfileTable.updatedAt,
+        totalQuizzesTaken: userProfileTable.totalQuizzesTaken,
+        highestScore: userProfileTable.highestScore,
+      })
+      .from(userProfileTable)
+      .where(eq(userProfileTable.userId, user.id))
+      .limit(1);
+
+    if (!profile) {
+      throw new HTTPException(404, { message: 'User not existed' });
+    }
+    return c.json({
       success: true,
       message: 'User fetched',
-      data: { username: user.username },
+      data: { username: user.username, profile },
     });
   });

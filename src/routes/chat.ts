@@ -52,7 +52,7 @@ export const chatRouter = new Hono<Context>()
           createdAt: serverReceivedTimestamp, // Use server-side timestamp
         };
 
-        const completions = res.choices.map((item) => item.message).join();
+        const completions = res.choices.map((item) => item.message.content).join();
         const chatMessageFromLlm: ChatMessagesTable = {
           id: randomUUIDv7(),
           chatSessionId: res.id,
