@@ -1,4 +1,4 @@
-*# How to Develop
+# How to Develop
 
 First install `bun` and `docker`.
 
