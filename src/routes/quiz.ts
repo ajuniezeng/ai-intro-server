@@ -73,7 +73,7 @@ export const quizRouter = new Hono<Context>()
     '/attempt/:attemptId/answer',
     loggedIn,
     zValidator(
-      'form',
+      'json',
       z.object({
         questionId: z.string(),
         userAnswer: z.string(), // Can be 'true', 'false', or option_id
@@ -81,7 +81,7 @@ export const quizRouter = new Hono<Context>()
     ),
     async (c) => {
       const attemptId = c.req.param('attemptId');
-      const { questionId, userAnswer } = c.req.valid('form');
+      const { questionId, userAnswer } = c.req.valid('json');
       const user = c.get('user')!;
 
       const [quizAttempt] = await db

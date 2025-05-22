@@ -90,7 +90,7 @@ All chat routes require user authentication.
 ### `POST /completions`
 
 * **Description**: Submits a user's message to the LLM and receives a completion. It stores the user's message and the LLM's response in the database, creating a new chat session if necessary.
-* **Request Body**: `application/form`
+* **Request Body**: `application/json`
 
     ```json
     {
@@ -136,7 +136,7 @@ All quiz routes require user authentication.
 * **Description**: Submits an answer for a specific question in an ongoing quiz attempt.
 * **Path Parameters**:
   * `attemptId` (string): The ID of the current quiz attempt.
-* **Request Body**: `application/form`
+* **Request Body**: `application/json`
 
     ```json
     {

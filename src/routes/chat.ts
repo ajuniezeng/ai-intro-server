@@ -29,11 +29,11 @@ type ChatHistory = {
 export const chatRouter = new Hono<Context>()
   .post(
     '/completions',
-    zValidator('form', chatMessageSchema),
+    zValidator('json', chatMessageSchema),
     loggedIn,
     async (c) => {
       const serverReceivedTimestamp = new Date(); // Capture server-side timestamp
-      const message = c.req.valid('form');
+      const message = c.req.valid('json');
       const user = c.get('user')!;
 
       try {
